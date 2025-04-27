@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sleep Quality Recommendation</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+</head>
+
+<body>
+    <div class="container my-5">
+        <div class="mx-auto" style="max-width: 500px;">
+            <h3 class="mx-auto" style="max-width: 500px;">Fuzzy Sleep Quality Recommendation
+                <a href="{{ url_for('visualizations') }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                        class="bi bi-info-square" viewBox="0 0 16 16" style="color: black;">
+                        <path
+                            d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z" />
+                        <path
+                            d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0" />
+                    </svg>
+                </a>
+            </h3>
+
+            <p class="text-center mb-4">Enter your current sleep habits and conditions, and we'll provide personalized
+                recommendations to improve your sleep quality.</p>
+
+            <form id="sleepForm">
+                <div class="form-group">
+                    <label for="sleepDuration">Sleep Duration</label>
+                    <select id="sleepDuration" class="form-control" required>
+                        <option value="">Select Duration</option>
+                        <option value="0">Short (Less than 7 hours)</option>
+                        <option value="1">Ideal (7-9 hours)</option>
+                        <option value="2">Long (More than 9 hours)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="screenTime">Screen Time Before Bed</label>
+                    <select id="screenTime" class="form-control" required>
+                        <option value="">Select Screen Time</option>
+                        <option value="2">Extensive (More than 60 min)</option>
+                        <option value="1">Moderate (30-60 min)</option>
+                        <option value="0">Minimum (Less than 30 min)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="stressLevel">Stress Level</label>
+                    <select id="stressLevel" class="form-control" required>
+                        <option value="">Select Stress Level</option>
+                        <option value="2">High (Feeling overwhelmed, anxious)</option>
+                        <option value="1">Medium (Feeling stressed, but manageable)</option>
+                        <option value="0">Low (Feeling relaxed, calm)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="roomEnvironment">Room Environment Score</label>
+                    <select id="roomEnvironment" class="form-control" required>
+                        <option value="">Select Room Environment</option>
+                        <option value="0">Poor (Noisy, uncomfortable)</option>
+                        <option value="1">Moderate (Some noise, comfortable)</option>
+                        <option value="2">Optimal (Quiet, comfortable)</option>
+                    </select>
+                </div>
+
+                <button type="button" class="btn btn-primary btn-block" onclick="getSleepQuality()">Get Sleep
+                    Recommendations</button>
+            </form>
+
+            <div id="result" class="alert alert-info d-none mt-4">
+                <h5 class="text-center mb-3">Your Sleep Quality Assessment</h5>
+                <div id="qualityResult" class="mt-3"></div>
+                <div id="recommendationResult" class="mt-3"></div>
+            </div>
+
+            <!-- Feedback Section -->
+            <div id="feedbackSection" class="mt-4 d-none">
+                <label for="feedbackSelect">How helpful was the recommendation?</label>
+                <select class="form-control" id="feedbackSelect">
+                    <option value="">Select an option</option>
+                    <option>Very Helpful</option>
+                    <option>Somewhat Helpful</option>
+                    <option>Not Helpful</option>
+                </select>
+                <button class="btn btn-outline-primary mt-3" onclick="submitFeedback()">Submit Feedback</button>
+                <div id="feedbackMessage" class="mt-3"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function getSleepQuality() {
+            const sleepDuration = document.getElementById("sleepDuration").value;
+            const screenTime = document.getElementById("screenTime").value;
+            const stressLevel = document.getElementById("stressLevel").value;
+            const roomEnvironment = document.getElementById("roomEnvironment").value;
+            const resultDiv = document.getElementById("result");
+            const qualityResultDiv = document.getElementById("qualityResult");
+            const recommendationResultDiv = document.getElementById("recommendationResult");
+
+            if (!sleepDuration || !screenTime || !stressLevel || !roomEnvironment) {
+                resultDiv.classList.remove("d-none");
+                resultDiv.classList.remove("alert-info");
+                resultDiv.classList.add("alert-danger");
+                qualityResultDiv.textContent = "Please complete all fields.";
+                qualityResultDiv.classList.add("text-center");
+                recommendationResultDiv.textContent = "";
+                document.getElementById("feedbackSection").classList.add("d-none");
+                return;
+            }
+
+            $.post('/get_sleep_quality', {
+                sleepDuration, screenTime, stressLevel, roomEnvironment
+            }, function (data) {
+                resultDiv.classList.remove("d-none");
+                resultDiv.classList.remove("alert-danger");
+                resultDiv.classList.add("alert-info");
+                qualityResultDiv.innerHTML = "<strong>Your Sleep Quality:</strong> " + data.sleepQuality;
+                recommendationResultDiv.innerHTML = "<strong>Recommendation:</strong><br>" + data.recommendation;
+
+                // Show feedback section
+                document.getElementById("feedbackSection").classList.remove("d-none");
+                document.getElementById("feedbackMessage").innerText = "";
+            }).fail(function () {
+                resultDiv.classList.remove("d-none");
+                resultDiv.classList.remove("alert-info");
+                resultDiv.classList.add("alert-danger");
+                qualityResultDiv.textContent = "An error occurred. Please try again.";
+                recommendationResultDiv.textContent = "";
+                document.getElementById("feedbackSection").classList.add("d-none");
+            });
+        }
+
+        function submitFeedback() {
+            const feedback = document.getElementById("feedbackSelect").value;
+            const messageDiv = document.getElementById("feedbackMessage");
+
+            if (!feedback) {
+                messageDiv.innerText = "Please select an option.";
+                messageDiv.className = "alert alert-danger mt-3";
+            } else {
+                messageDiv.innerText = "Thank you for your feedback!";
+                messageDiv.className = "alert alert-info mt-3";
+            }
+        }
+    </script>
+</body>
+
+</html>

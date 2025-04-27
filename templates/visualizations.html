@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Fuzzy Membership Function Visualizations</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body class="bg-light">
+    <div class="container my-5">
+        <h3 class="text-center mb-4">Fuzzy Rule-Based System Visualizations</h3>
+
+        <div class="mb-5">
+            <h5>Sleep Duration Membership Function</h5>
+            <img src="{{ url_for('static', filename='visualisations/sleep_duration.png') }}" alt="Sleep Duration"
+                class="img-fluid mt-2 mb-4 w-50">
+        </div>
+
+        <div class="mb-5">
+            <h5>Screen Time Before Bed Membership Function</h5>
+            <img src="{{ url_for('static', filename='visualisations/screen_time.png') }}" alt="Screen Time"
+                class="img-fluid mt-2 mb-4 w-50">
+        </div>
+
+        <div class="mb-5">
+            <h5>Stress Level Membership Function</h5>
+            <img src="{{ url_for('static', filename='visualisations/stress_level.png') }}" alt="Stress Level"
+                class="img-fluid mt-2 mb-4 w-50">
+        </div>
+
+        <div class="mb-5">
+            <h5>Room Environment Membership Function</h5>
+            <img src="{{ url_for('static', filename='visualisations/room_environment.png') }}" alt="Room Environment"
+                class="img-fluid mt-2 mb-4 w-50">
+        </div>
+
+        <div class="mb-5">
+            <h5>Sleep Quality Membership Function</h5>
+            <img src="{{ url_for('static', filename='visualisations/sleep_quality.png') }}" alt="Sleep Quality"
+                class="img-fluid mt-2 mb-4 w-50">
+        </div>
+
+        <a href="{{ url_for('index') }}" class="btn btn-primary mt-4">Back to Main Page</a>
+    </div>
+</body>
+
+</html>
